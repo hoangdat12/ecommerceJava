@@ -6,8 +6,10 @@ import com.example.catchingdata.dto.InventoryDTO.RequestInventory;
 import com.example.catchingdata.dto.OrderDTO.OrderProduct;
 import com.example.catchingdata.dto.OrderDTO.OrderRequest;
 import com.example.catchingdata.models.OrderModel.Order;
+import com.example.catchingdata.models.UserModel.User;
 import com.example.catchingdata.repositories.OrderRepository;
 import com.example.catchingdata.response.errorResponse.BadRequest;
+import com.example.catchingdata.response.errorResponse.InternalServerError;
 import com.example.catchingdata.response.errorResponse.NotFound;
 import com.example.catchingdata.response.successResponse.Ok;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class OrderService {
     private final InventoryService inventoryService;
     private final DiscountService discountService;
     private final ProductService productService;
+    private final HistoryBuyService historyBuyService;
     private final MongoTemplate mongoTemplate;
     public ResponseEntity<?> order(OrderRequest request, String userId)  {
         List<RequestInventory> requestInventories = new ArrayList<>();
@@ -68,18 +71,26 @@ public class OrderService {
             return new Ok<>(orderSaved).sender();
         }
     }
-    public ResponseEntity<?> confirmReceivedOrder(String userId, String orderId) {
+    public ResponseEntity<?> confirmReceivedOrder(User user, String orderId) {
         Order order = orderRepository.findById(orderId).orElse(null);
         if (order == null) {
             throw new NotFound("Order not found!");
         }
-        if (!order.getUserId().equals(userId)) {
+        if (!order.getUserId().equals(user.getId())) {
             throw new BadRequest("Invalid information required!");
         }
+        boolean isSuccess;
         // Increment purchase of Product;
-        productService.incrementPurchaseOfProduct(order.getProducts());
+        isSuccess = productService.incrementPurchaseOfProduct(order.getProducts());
+        if (!isSuccess) {
+            throw new InternalServerError("DB error!");
+        }
         // Delete order
         orderRepository.delete(order);
+        isSuccess = historyBuyService.addProductToHistory(order.getProducts(), user);
+        if (!isSuccess) {
+            throw new InternalServerError("DB error!");
+        }
         return new Ok<>("Thank you for purchasing from us!").sender();
     }
     public ResponseEntity<?> getAllOrderOfUser(String userId) {

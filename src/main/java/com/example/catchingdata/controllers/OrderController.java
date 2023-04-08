@@ -29,7 +29,7 @@ public class OrderController {
             @RequestBody ConfirmOrder confirmOrder
     ) {
         final User user = (User) request.getAttribute("user");
-        return orderService.confirmReceivedOrder(user.getId(), confirmOrder.getOrderId());
+        return orderService.confirmReceivedOrder(user, confirmOrder.getOrderId());
     }
     // Get All Order Of User
     @GetMapping("/user/{userId}")

@@ -131,7 +131,7 @@ public class ProductService {
             return products;
         }
     }
-    public void incrementPurchaseOfProduct(List<OrderProduct> orderProducts) {
+    public boolean incrementPurchaseOfProduct(List<OrderProduct> orderProducts) {
         List<String> productIds = orderProducts.stream()
                 .map(OrderProduct::getId)
                 .collect(Collectors.toList());
@@ -150,6 +150,7 @@ public class ProductService {
             product.setPurchases(product.getPurchases() + productOrder.getQuantity());
         }
         productRepository.saveAll(products);
+        return true;
     }
     public ResponseEntity<?> pagination(
             Integer page,

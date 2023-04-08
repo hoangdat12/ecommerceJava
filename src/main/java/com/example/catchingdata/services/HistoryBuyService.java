@@ -1,5 +1,6 @@
 package com.example.catchingdata.services;
 
+import com.example.catchingdata.dto.HistoryResponseDTO;
 import com.example.catchingdata.dto.OrderDTO.OrderProduct;
 import com.example.catchingdata.models.HistoryBuy.HistoryBuy;
 import com.example.catchingdata.models.UserModel.User;
@@ -52,13 +53,16 @@ public class HistoryBuyService {
         return true;
     }
     public ResponseEntity<?> getAllHistoryBuyProductOfUser(String userId) {
-        Query query = new Query(Criteria.where("user._id.oid").is(userId));
+        Query query = new Query(Criteria.where("userId").is(userId));
         HistoryBuy history = mongoTemplate.findOne(query, HistoryBuy.class);
-        log.info("User:::  {}", history);
         if (history.equals(null)) {
             throw new NotFound("User not found!");
         } else {
-            return new Ok<>(history).sender();
+            HistoryResponseDTO historyResponseDTO = new HistoryResponseDTO(
+                    history.getUser().getId(),
+                    history.getProductsBought()
+            );
+            return new Ok<>(historyResponseDTO).sender();
         }
     }
 }

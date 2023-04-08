@@ -176,7 +176,6 @@ public class CartService {
         Query query = new Query(Criteria.where("_id").is(request.getCartId())
                 .and("userId").is(request.getUserId()));
         Cart cart = mongoTemplate.findOne(query, Cart.class);
-        log.info("cart:::{}", cart);
         if (cart == null) {
             throw new NotFound("Cart not found!");
         }

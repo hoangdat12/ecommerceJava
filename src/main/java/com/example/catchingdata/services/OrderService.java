@@ -45,7 +45,6 @@ public class OrderService {
                 inventoryService.checkIsStockMultipleProduct(
                         new InventoryCheckIsStockMultipleProduct(requestInventories)
                 );
-        log.info("productSaleOut::: {}", productSaleOut);
         if (!productSaleOut.isStock()) {
             throw new IllegalArgumentException("Product sale out");
         }
@@ -70,6 +69,17 @@ public class OrderService {
             Order orderSaved = orderRepository.save(newOrder);
             return new Ok<>(orderSaved).sender();
         }
+    }
+    public ResponseEntity cancelOrder(User user, String orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            throw new NotFound("Order not found!");
+        }
+        if (!order.getUserId().equals(user.getId())) {
+            throw new BadRequest("Invalid information required!");
+        }
+        orderRepository.delete(order);
+        return new Ok<>("Cancel order successfully!").sender();
     }
     public ResponseEntity<?> confirmReceivedOrder(User user, String orderId) {
         Order order = orderRepository.findById(orderId).orElse(null);

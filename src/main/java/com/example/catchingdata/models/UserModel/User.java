@@ -3,6 +3,8 @@ package com.example.catchingdata.models.UserModel;
 
 import com.example.catchingdata.models.UserModel.AccessToken;
 import com.example.catchingdata.models.UserModel.RefreshToken;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,8 +30,12 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     private String id;
+    @NotBlank(message = "Full name is required!")
     private String fullName;
+    @Email(message = "Email is not valid!")
+    @NotBlank(message = "Email is required!")
     private String email;
+    @NotBlank(message = "Password is required!")
     private String password;
     private String role;
     private Boolean isActive = true;

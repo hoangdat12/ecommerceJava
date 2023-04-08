@@ -5,6 +5,7 @@ import com.example.catchingdata.models.UserModel.User;
 import com.example.catchingdata.response.successResponse.Ok;
 import com.example.catchingdata.services.InventoryService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class InventoryController {
     @PostMapping("/increase")
     public ResponseEntity<?> increaseQuantityProduct(
             HttpServletRequest request,
-            @RequestBody RequestInventory requestInventory
+            @Valid @RequestBody RequestInventory requestInventory
     ) {
         User user = (User) request.getAttribute("user");
         boolean status = inventoryService.increaseQuantityProduct(requestInventory, user);

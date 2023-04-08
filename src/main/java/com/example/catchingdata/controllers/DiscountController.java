@@ -6,6 +6,7 @@ import com.example.catchingdata.models.UserModel.User;
 import com.example.catchingdata.response.successResponse.Ok;
 import com.example.catchingdata.services.DiscountService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class DiscountController {
     private final DiscountService discountService;
     @PostMapping("/create")
     private ResponseEntity<?> createDiscount(
-            @RequestBody InformationDiscount informationDiscount,
+            @Valid @RequestBody InformationDiscount informationDiscount,
             HttpServletRequest request
     ) {
         User user = (User) request.getAttribute("user");

@@ -3,6 +3,7 @@ package com.example.catchingdata.controllers;
 import com.example.catchingdata.dto.AuthDTO.*;
 import com.example.catchingdata.services.AuthService;
 import com.sun.jdi.InternalException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
             String msg = authService.register(request);
             return ResponseEntity.ok(msg);
@@ -24,7 +25,7 @@ public class AuthController {
         }
     }
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthenticationRequest request) {
         try {
             AuthResponse authResponse = authService.login(request);
             return ResponseEntity.ok(authResponse);
@@ -33,7 +34,7 @@ public class AuthController {
         }
     }
     @PostMapping("/refresh-token")
-    public ResponseEntity<RefreshTokenDTO> login(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<RefreshTokenDTO> login(@Valid @RequestBody RefreshTokenRequest request) {
         try {
             String accessToken = authService.refreshToken(request.getRefreshToken());
             RefreshTokenDTO response = new RefreshTokenDTO(accessToken);

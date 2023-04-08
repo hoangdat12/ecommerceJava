@@ -7,6 +7,7 @@ import com.example.catchingdata.dto.ProductDTO.DeleteProductToCart;
 import com.example.catchingdata.models.UserModel.User;
 import com.example.catchingdata.services.CartService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<?> addProductToCart(
             HttpServletRequest request,
-            @RequestBody AddProductToCartDto requestAdd
+            @Valid @RequestBody AddProductToCartDto requestAdd
     ) {
         User user = (User) request.getAttribute("user");
         return cartService.addProductToCart(user, requestAdd);
@@ -44,7 +45,7 @@ public class CartController {
     @PostMapping("/adds")
     public ResponseEntity<?> addProductToCart(
             HttpServletRequest request,
-            @RequestBody AddMultiProductToCartDto requestAdd
+            @Valid @RequestBody AddMultiProductToCartDto requestAdd
     ) {
         User user = (User) request.getAttribute("user");
         return cartService.addMultiProductToCart(user, requestAdd);
@@ -52,22 +53,18 @@ public class CartController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteProductToCart(
             HttpServletRequest request,
-            @RequestBody DeleteProductToCart requestDelete
+            @Valid @RequestBody DeleteProductToCart requestDelete
     ) {
         User user = (User) request.getAttribute("user");
         return cartService.removeProductToCart(user, requestDelete);
     }
     @PostMapping("/deletes")
-    public ResponseEntity<?> deleteMultipleProductToCart(@RequestBody DeleteMultipleProductToCart request) {
+    public ResponseEntity<?> deleteMultipleProductToCart(
+            @Valid @RequestBody DeleteMultipleProductToCart request) {
         return cartService.removeMultipleProductToCart(request);
     }
     @GetMapping("/{userId}")
     public ResponseEntity<?> getDetailCartOfUser(@PathVariable String userId) throws IOException {
         return cartService.getDetailCartOfUserV2(userId);
-    }
-    @GetMapping("/test")
-    public boolean testCode(HttpServletRequest request) {
-        log.info("request::: {}", request.getAttribute("user").toString());
-        return true;
     }
 }

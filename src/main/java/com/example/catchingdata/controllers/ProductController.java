@@ -9,6 +9,7 @@ import com.example.catchingdata.response.successResponse.Ok;
 import com.example.catchingdata.services.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> createProduct(
             HttpServletRequest request,
-            @RequestBody ProductRequest productRequest
+            @Valid @RequestBody ProductRequest productRequest
     ) {
             User user = (User) request.getAttribute("user");
             return productService.createProduct(productRequest, user);
@@ -30,7 +31,7 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(
             HttpServletRequest request,
             @PathVariable String id,
-            @RequestBody ProductRequest productRequest
+            @Valid @RequestBody ProductRequest productRequest
     ) {
            User user = (User) request.getAttribute("user");
            return productService.updateProduct(id, productRequest, user);
@@ -78,7 +79,8 @@ public class ProductController {
         }
     }
     @PostMapping("/productIds")
-    public ResponseEntity<?> getAllProductInProductIds(@RequestBody ProductIds productIds) {
+    public ResponseEntity<?> getAllProductInProductIds(
+            @Valid @RequestBody ProductIds productIds) {
         try {
             return new Ok<>(productService.getAllProductInProductIds(productIds.getProductIds()))
                     .sender();

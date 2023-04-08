@@ -69,11 +69,11 @@ public class OrderService {
         }
     }
     public ResponseEntity<?> confirmReceivedOrder(String userId, String orderId) {
-        Order order = orderRepository.findByUserId(orderId).orElse(null);
+        Order order = orderRepository.findById(orderId).orElse(null);
         if (order == null) {
             throw new NotFound("Order not found!");
         }
-        if (order.getUserId() != userId) {
+        if (!order.getUserId().equals(userId)) {
             throw new BadRequest("Invalid information required!");
         }
         // Increment purchase of Product;

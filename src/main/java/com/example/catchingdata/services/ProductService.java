@@ -26,6 +26,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -124,10 +125,10 @@ public class ProductService {
     public List<Product> getAllProductInProductIds(List<String> productIds) {
         Query query = new Query(Criteria.where("_id").in(productIds));
         List<Product> products = mongoTemplate.find(query, Product.class);
-        if (!products.isEmpty()) {
-            return products;
-        } else {
+        if (products.isEmpty()) {
             return null;
+        } else {
+            return products;
         }
     }
     public void incrementPurchaseOfProduct(List<OrderProduct> orderProducts) {
@@ -140,7 +141,7 @@ public class ProductService {
         }
         for (Product product: products) {
             OrderProduct productOrder = orderProducts.stream()
-                    .filter(orderProduct -> orderProduct.equals(product.getId()))
+                    .filter(orderProduct -> orderProduct.getId().equals(product.getId()))
                     .findFirst()
                     .orElse(null);
             if (productOrder == null) {
@@ -148,6 +149,7 @@ public class ProductService {
             }
             product.setPurchases(product.getPurchases() + productOrder.getQuantity());
         }
+        productRepository.saveAll(products);
     }
     public ResponseEntity<?> pagination(
             Integer page,
@@ -194,6 +196,16 @@ public class ProductService {
                 products, page, limit, sortedBy, type, products.size()
         );
         return new Ok<>(paginationDTO).sender();
+    }
+    public ResponseEntity<?> searchProduct(String keyword) {
+        String keywordNormalize = Normalizer.normalize(keyword, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        Query query = new Query(Criteria.where("name")
+                .regex(keywordNormalize, "i")
+                .regex(keywordNormalize, "m")
+        ).limit(20);
+        List<Product> products = mongoTemplate.find(query, Product.class);
+        return new Ok<>(products).sender();
     }
 //    public ResponseEntity<?> getProducts(
 //            int page,

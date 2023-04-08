@@ -87,6 +87,18 @@ public class ProductController {
             throw new InternalServerError("Server Error!");
         }
     }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProduct(
+            @RequestParam String q
+    ) {
+        try {
+            return new Ok<>(productService.searchProduct(q))
+                    .sender();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new InternalServerError("Server Error!");
+        }
+    }
 //    @GetMapping("/trend")
 //    public ResponseEntity<?> getTrendProduct() {
 //        try {
